@@ -1,3 +1,9 @@
+/*
+Main Activity file for Chess Clock Android App
+Author:  Chip Weatherly
+Date:    1/6/2025
+Purpose: Holds logic for chess clock app main screen
+ */
 package com.example.coffeehouse
 
 import android.os.Bundle
@@ -7,35 +13,57 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import android.os.CountDownTimer
 import android.widget.TextView
+import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
-    lateinit var textView : TextView
+    // textView holds id of the first textView item
+    lateinit var clock1 : TextView
+    lateinit var clock2 : TextView
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
-        textView = findViewById(R.id.textView)
-
-        // testing : (findViewById(R.id.main) -> (findViewById(R.id.textView)
-        //ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.textView)) { v, insets ->
-        //    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-        //    v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-        //    insets
-        //}
-
+        // assign the view ids to variables
+        clock1 = findViewById(R.id.clock1)
+        clock2 = findViewById(R.id.clock2)
 
         // Timer object, 600000 = 10 mins 1 = 1 millisecond
-        object : CountDownTimer(30000, 1000) {
+        object : CountDownTimer(600000, 1000) {
 
             // Callback function triggered regularly
             override fun onTick(millisUntilFinished: Long) {
-                textView.text = "seconds remaining: " + millisUntilFinished / 1000
+
+                val dec = DecimalFormat("00")
+
+                val hour = (millisUntilFinished / 3600000) % 24
+                val min = (millisUntilFinished / 60000) % 60
+                val sec = (millisUntilFinished / 1000) % 60
+                clock1.text = dec.format(hour) + ":" + dec.format(min) + ":" + dec.format(sec)
             }
 
             // fires when the time is up
             override fun onFinish() {
-                textView.text = "Done!"
+                clock1.text = "Time's Up!"
+            }
+        }.start()
+
+        object : CountDownTimer(600000, 1000) {
+
+            // Callback function triggered regularly
+            override fun onTick(millisUntilFinished: Long) {
+
+                val dec = DecimalFormat("00")
+
+                val hour = (millisUntilFinished / 3600000) % 24
+                val min = (millisUntilFinished / 60000) % 60
+                val sec = (millisUntilFinished / 1000) % 60
+                clock2.text = dec.format(hour) + ":" + dec.format(min) + ":" + dec.format(sec)
+            }
+
+            // fires when the time is up
+            override fun onFinish() {
+                clock2.text = "Time's Up!"
             }
         }.start()
     }
