@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Coffeehouse</string>
+    <string name="title">Chess Timer</string>
+    <string name="TextView">TextView</string>
 </resources>
