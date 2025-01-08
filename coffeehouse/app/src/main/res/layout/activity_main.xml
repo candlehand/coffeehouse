@@ -31,6 +31,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <Button
+            android:id="@+id/timerSwapButton"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:onClick="timerSwapButtonClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -49,7 +59,7 @@
             android:layout_weight="1"
             android:background="?android:attr/detailsElementBackground"
             android:gravity="center_horizontal|center_vertical"
-            android:text="@string/timerText"
+            android:text="@string/timer2Text"
             android:textColor="#189C1E"
             android:textSize="36sp"
             android:textStyle="bold" />
@@ -62,7 +72,7 @@
             android:layout_weight="1"
             android:background="?android:attr/detailsElementBackground"
             android:gravity="center_horizontal|center_vertical"
-            android:text="@string/timerText"
+            android:text="@string/timer1Text"
             android:textColor="#189C1E"
             android:textSize="36sp"
             android:textStyle="bold" />
