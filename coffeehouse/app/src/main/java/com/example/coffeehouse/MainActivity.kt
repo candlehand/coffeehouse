@@ -3,6 +3,9 @@ Main Activity file for Chess Clock Android App
 Author:  Chip Weatherly
 Date:    1/6/2025
 Purpose: Holds logic for chess clock app main screen
+Changelog:
+1/6/25 Initial creation - CW
+1/7/25 Added clock functionality - CW
  */
 package com.example.coffeehouse
 
