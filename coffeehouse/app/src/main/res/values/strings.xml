@@ -5,4 +5,7 @@
     <string name="timer2Text">Player 2</string>
     <string name="initialClock">10:00:00</string>
     <string name="timeOut">Time\'s up!</string>
+    <!-- to toggle the open close button of the navigation drawer -->
+    <string name="nav_open">Open</string>
+    <string name="nav_close">Close</string>
 </resources>
