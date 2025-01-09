@@ -84,7 +84,10 @@ class MainActivity : AppCompatActivity() {
             val hour = (clock1Time / 3600000) % 24
             val min = (clock1Time / 60000) % 60
             val sec = (clock1Time / 1000) % 60
-            clock1.text = dec.format(hour) + ":" + dec.format(min) + ":" + dec.format(sec)
+            val formHour = dec.format(hour)
+            val formMin = dec.format(min)
+            val formSec = dec.format(sec)
+            clock1.text = getString(R.string.formatClock, formHour, formMin, formSec)
         }
 
         // displays message when the time runs out
@@ -101,7 +104,10 @@ class MainActivity : AppCompatActivity() {
             val hour = (clock2Time / 3600000) % 24
             val min = (clock2Time / 60000) % 60
             val sec = (clock2Time / 1000) % 60
-            clock2.text = dec.format(hour) + ":" + dec.format(min) + ":" + dec.format(sec)
+            val formHour = dec.format(hour)
+            val formMin = dec.format(min)
+            val formSec = dec.format(sec)
+            clock2.text = getString(R.string.formatClock, formHour, formMin, formSec)
         }
         // displays message when the time runs out
         override fun onFinish() {

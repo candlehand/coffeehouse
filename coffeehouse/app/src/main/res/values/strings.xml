@@ -4,6 +4,7 @@
     <string name="timer1Text">Player 1</string>
     <string name="timer2Text">Player 2</string>
     <string name="initialClock">10:00:00</string>
+    <string name="formatClock" formatted="true">%1$s:%2$s:%3$s</string>
     <string name="timeOut">Time\'s up!</string>
     <!-- to toggle the open close button of the navigation drawer -->
     <string name="nav_open">Open</string>
