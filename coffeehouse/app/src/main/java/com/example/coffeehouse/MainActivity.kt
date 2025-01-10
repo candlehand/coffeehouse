@@ -7,6 +7,7 @@ Changelog:
 1/6/25 Initial creation - CW
 1/7/25 Added clock functionality - CW
 1/8/25 Added ability to switch between clocks by clicking the screen - CW
+1/10/25 Added functionality for drop-down menu
  */
 package com.example.coffeehouse
 
@@ -14,12 +15,17 @@ import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.View
 import android.view.MenuItem
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
@@ -30,8 +36,8 @@ class MainActivity : AppCompatActivity() {
     // hold user's selection of which player's turn it is
     private var timerSelected = 1
     // holds remaining time on each clock
-    private var clock1Time: Long = 600000
-    private var clock2Time: Long = 600000
+    var clock1Time: Long = 600000
+    var clock2Time: Long = 600000
     // init textView variables for the 2 clocks
     lateinit var clock1 : TextView
     lateinit var clock2 : TextView
@@ -57,6 +63,12 @@ class MainActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
         // to make the Navigation drawer icon always appear on the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        // assign NavigationView to a variable
+        val mainNavigationView = findViewById<View>(R.id.navigation) as NavigationView
+        // handles navigationview menu item selection
+        mainNavigationView.setNavigationItemSelectedListener { menuItem ->
+            onNavigationItemSelected(menuItem)
+        }
 
         // assign the clock view ids to variables
         clock1 = findViewById(R.id.clock1)
@@ -68,11 +80,53 @@ class MainActivity : AppCompatActivity() {
         startTimers(timer1, timer2, timerSelected)
     }
 
+    private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+        Log.d("MainActivity", "Menu item selected: ${menuItem.title}")
+        val id = menuItem.itemId
+        when (id) {
+            R.id.nav_dark_mode -> {
+                // Handle the theme switch action
+                Toast.makeText(this, "Theme switch selected", Toast.LENGTH_SHORT).show()
+                toggleDarkMode()
+                // val intent = Intent(this, HomeActivity::class.java)
+                // startActivity(intent)
+            }
+            R.id.nav_settings -> {
+                // Handle the settings action
+                Toast.makeText(this, "Settings selected", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_reset -> {
+                // Handle the reset action
+                Toast.makeText(this, "Clocks Reset", Toast.LENGTH_SHORT).show()
+                timer1.cancel()
+                timer2.cancel()
+                clock1Time = 600000
+                clock2Time = 600000
+                startTimers(timer1, timer2, timerSelected)
+            }
+        }
+        // Close the navigation drawer after item is selected
+        drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
     // opens and closes the drawer when icon is clicked
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             true
         } else super.onOptionsItemSelected(item)
+    }
+    private fun toggleDarkMode() {
+        // Get the current night mode
+        val currentNightMode = AppCompatDelegate.getDefaultNightMode()
+        if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
+            // If currently in dark mode, switch to light mode
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            Toast.makeText(this, "Switched to Light Mode", Toast.LENGTH_SHORT).show()
+        } else {
+            // If currently in light mode, switch to dark mode
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            Toast.makeText(this, "Switched to Dark Mode", Toast.LENGTH_SHORT).show()
+        }
     }
 
     // Timer object for player 1, 600000 = 10 minutes 1 = 1 millisecond
@@ -125,7 +179,9 @@ class MainActivity : AppCompatActivity() {
         }
         startTimers(timer1, timer2, timerSelected)
     }
+
 }
+
 // method initializes one timer at a time at program start
 fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
     // 'timerSelected' will hold the user's choice of who will go first

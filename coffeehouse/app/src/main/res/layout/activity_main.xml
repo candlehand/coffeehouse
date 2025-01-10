@@ -12,15 +12,6 @@ tools:context=".MainActivity"
 tools:openDrawer="start"
 tools:ignore="HardcodedText">
 
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:fitsSystemWindows="false"
-        app:menu="@menu/navigation" >
-
-    </com.google.android.material.navigation.NavigationView>
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -104,5 +95,13 @@ tools:ignore="HardcodedText">
         </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigation"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="false"
+        app:menu="@menu/navigation"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>
