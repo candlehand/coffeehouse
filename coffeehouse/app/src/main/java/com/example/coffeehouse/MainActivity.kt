@@ -170,12 +170,14 @@ class MainActivity : AppCompatActivity() {
     }
     // method for capturing button click to swap clocks
     fun timerSwapButtonClick(view: View?) {
-        // save the current clock numbers when clicked
-        println(clock1Time)
-        timerSelected = if (timerSelected == 1){
-            2
+        if (timerSelected == 1){
+            // adds 5 seconds when clock is stopped per Fischer rules
+            clock2Time += 5000
+            timerSelected = 2
         } else {
-            1
+            // adds 5 seconds when clock is stopped per Fischer rules
+            clock1Time += 5000
+            timerSelected = 1
         }
         startTimers(timer1, timer2, timerSelected)
     }

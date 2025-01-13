@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Coffeehouse</string>
+    <string name="app_name">Coffeehouse: Chess Timer</string>
     <string name="title">Chess Timer</string>
     <string name="timer1Text">Player 1</string>
     <string name="timer2Text">Player 2</string>
