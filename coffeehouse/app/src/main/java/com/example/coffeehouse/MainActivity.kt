@@ -8,9 +8,12 @@ Changelog:
 1/7/25 Added clock functionality - CW
 1/8/25 Added ability to switch between clocks by clicking the screen - CW
 1/10/25 Added functionality for drop-down menu
+1/13/25 Added +5 seconds on switch as per Fischer timing
+1/14/25 Altered display to show 5 second addition correctly
  */
 package com.example.coffeehouse
 
+import android.app.Dialog
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +21,8 @@ import android.os.CountDownTimer
 import android.util.Log
 import android.view.View
 import android.view.MenuItem
+import android.view.MotionEvent
+import android.view.Window
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -76,8 +81,37 @@ class MainActivity : AppCompatActivity() {
         // assign initial values to clock text. To be changed into variables
         clock1.text = getString(R.string.initialClock)
         clock2.text = getString(R.string.initialClock)
+
+        // Display start message to user
+        startDialog()
+
         // begin the countdown!!!
         startTimers(timer1, timer2, timerSelected)
+    }
+
+    // function for starting message
+    private fun startDialog() {
+        val dialog = Dialog(this)
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.custom_dialog)
+
+        val body: TextView = dialog.findViewById(R.id.intro_card)
+        body.text = getString(R.string.intro_message)
+
+        // do something on touch
+        dialog.show()
+
+        dialog.window?.decorView?.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                dialog.dismiss()
+                true // Indicate that the touch event was handled
+            } else {
+                false
+            }
+        }
+
+
     }
 
     private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -158,7 +192,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // method for capturing button click to swap clocks
-    fun timerSwapButtonClick(view: View?) {
+    fun timerSwapButtonClick() {
         if (timerSelected == 1){
             // adds & displays extra 5 seconds when clock is stopped per Fischer rules
             clock1Time += 5000
@@ -186,6 +220,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
+
+
 // method initializes one timer at a time at program start
 fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
     // 'timerSelected' will hold the user's choice of who will go first
@@ -196,4 +232,5 @@ fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int
         timer1.cancel()
         timer2.start()
     }
+
 }
