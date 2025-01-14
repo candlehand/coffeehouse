@@ -31,8 +31,8 @@ import java.text.DecimalFormat
 class MainActivity : AppCompatActivity() {
 
     // variables for navigation bar function
-    lateinit var drawerLayout: DrawerLayout
-    lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     // hold user's selection of which player's turn it is
     private var timerSelected = 1
     // holds remaining time on each clock
@@ -115,6 +115,7 @@ class MainActivity : AppCompatActivity() {
             true
         } else super.onOptionsItemSelected(item)
     }
+
     private fun toggleDarkMode() {
         // Get the current night mode
         val currentNightMode = AppCompatDelegate.getDefaultNightMode()
@@ -134,14 +135,7 @@ class MainActivity : AppCompatActivity() {
         // Callback function triggered regularly
         override fun onTick(millisUntilFinished: Long) {
             clock1Time -= 1000
-            val dec = DecimalFormat("00")
-            val hour = (clock1Time / 3600000) % 24
-            val min = (clock1Time / 60000) % 60
-            val sec = (clock1Time / 1000) % 60
-            val formHour = dec.format(hour)
-            val formMin = dec.format(min)
-            val formSec = dec.format(sec)
-            clock1.text = getString(R.string.formatClock, formHour, formMin, formSec)
+            setClockText(clock1, clock1Time)
         }
 
         // displays message when the time runs out
@@ -149,39 +143,47 @@ class MainActivity : AppCompatActivity() {
             clock1.text = getString(R.string.timeOut)
         }
     }
+
     // Timer object for player 2
     private val timer2 = object : CountDownTimer(clock2Time, 1000) {
         // Callback function triggered regularly
         override fun onTick(millisUntilFinished: Long) {
             clock2Time -= 1000
-            val dec = DecimalFormat("00")
-            val hour = (clock2Time / 3600000) % 24
-            val min = (clock2Time / 60000) % 60
-            val sec = (clock2Time / 1000) % 60
-            val formHour = dec.format(hour)
-            val formMin = dec.format(min)
-            val formSec = dec.format(sec)
-            clock2.text = getString(R.string.formatClock, formHour, formMin, formSec)
+            setClockText(clock2, clock2Time)
         }
         // displays message when the time runs out
         override fun onFinish() {
             clock2.text = getString(R.string.timeOut)
         }
     }
+
     // method for capturing button click to swap clocks
     fun timerSwapButtonClick(view: View?) {
         if (timerSelected == 1){
-            // adds 5 seconds when clock is stopped per Fischer rules
-            clock2Time += 5000
+            // adds & displays extra 5 seconds when clock is stopped per Fischer rules
+            clock1Time += 5000
+            setClockText(clock1, clock1Time)
             timerSelected = 2
         } else {
-            // adds 5 seconds when clock is stopped per Fischer rules
-            clock1Time += 5000
+            // adds & displays extra 5 seconds when clock is stopped per Fischer rules
+            clock2Time += 5000
+            setClockText(clock2, clock2Time)
             timerSelected = 1
         }
         startTimers(timer1, timer2, timerSelected)
     }
 
+    // method for updating/displaying timer, pass in the timer and the clockTime value
+    fun setClockText(clock: TextView, clockTime: Long) {
+        val dec = DecimalFormat("00")
+        val hour = (clockTime / 3600000) % 24
+        val min = (clockTime / 60000) % 60
+        val sec = (clockTime / 1000) % 60
+        val formHour = dec.format(hour)
+        val formMin = dec.format(min)
+        val formSec = dec.format(sec)
+        clock.text = getString(R.string.formatClock, formHour, formMin, formSec)
+    }
 }
 
 // method initializes one timer at a time at program start
