@@ -9,7 +9,8 @@ Changelog:
 1/8/25 Added ability to switch between clocks by clicking the screen - CW
 1/10/25 Added functionality for drop-down menu
 1/13/25 Added +5 seconds on switch as per Fischer timing
-1/14/25 Altered display to show 5 second addition correctly
+1/14/25 Altered display to show 5 second addition correctly, added intro message
+        Timer only starts after an initial click
  */
 package com.example.coffeehouse
 
@@ -82,15 +83,12 @@ class MainActivity : AppCompatActivity() {
         clock1.text = getString(R.string.initialClock)
         clock2.text = getString(R.string.initialClock)
 
-        // Display start message to user
-        startDialog()
-
-        // begin the countdown!!!
-        startTimers(timer1, timer2, timerSelected)
+        // Displays start message to user, starts countdown when clicked
+        startDialog(timer1, timer2, timerSelected)
     }
 
     // function for starting message
-    private fun startDialog() {
+    private fun startDialog(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
@@ -99,19 +97,22 @@ class MainActivity : AppCompatActivity() {
         val body: TextView = dialog.findViewById(R.id.intro_card)
         body.text = getString(R.string.intro_message)
 
+        // closes the dialog when user clicks outside of it
+        dialog.setCanceledOnTouchOutside(true)
         // do something on touch
         dialog.show()
 
-        dialog.window?.decorView?.setOnTouchListener { _, event ->
+        dialog.window?.decorView?.setOnTouchListener { view, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 dialog.dismiss()
+                view.performClick() // calling performClick as per accessibility suggestions
+                // begin the countdown!!!
+                startTimers(timer1, timer2, timerSelected)
                 true // Indicate that the touch event was handled
             } else {
                 false
             }
         }
-
-
     }
 
     private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -136,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                 timer2.cancel()
                 clock1Time = 600000
                 clock2Time = 600000
-                startTimers(timer1, timer2, timerSelected)
+                startDialog(timer1, timer2, timerSelected)
             }
         }
         // Close the navigation drawer after item is selected
@@ -192,7 +193,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // method for capturing button click to swap clocks
-    fun timerSwapButtonClick() {
+    fun timerSwapButtonClick(view: View?) {
         if (timerSelected == 1){
             // adds & displays extra 5 seconds when clock is stopped per Fischer rules
             clock1Time += 5000
