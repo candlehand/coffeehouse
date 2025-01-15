@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.coffeehouse"
+    namespace = "com.weatherly.coffeehouse"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.coffeehouse"
+        applicationId = "com.weatherly.coffeehouse"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
