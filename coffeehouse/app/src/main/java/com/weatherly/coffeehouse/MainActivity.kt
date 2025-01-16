@@ -7,11 +7,12 @@ Changelog:
 1/6/25 Initial creation - CW
 1/7/25 Added clock functionality - CW
 1/8/25 Added ability to switch between clocks by clicking the screen - CW
-1/10/25 Added functionality for drop-down menu
-1/13/25 Added +5 seconds on switch as per Fischer timing
+1/10/25 Added functionality for drop-down menu - CW
+1/13/25 Added +5 seconds on switch as per Fischer timing - CW
 1/14/25 Altered display to show 5 second addition correctly, added intro message
-        Timer only starts after an initial click
+        Timer only starts after an initial click - CW
 1/16/25 Timers now persist when activity is restarted i.e. dark/light mode switch
+        Dark mode slider now correctly updates when mode is switched - CW
  */
 package com.weatherly.coffeehouse
 
@@ -25,14 +26,17 @@ import android.view.View
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.Window
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.switchmaterial.SwitchMaterial
 import java.text.DecimalFormat
 
 class MainActivity : AppCompatActivity() {
@@ -48,6 +52,8 @@ class MainActivity : AppCompatActivity() {
     // init textView variables for the 2 clocks
     lateinit var clock1 : TextView
     lateinit var clock2 : TextView
+    // init nave menu switch
+    private lateinit var switchDarkMode: SwitchCompat
 
     // runs on creation of the main activity, at app start
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +85,7 @@ class MainActivity : AppCompatActivity() {
         actionBarDrawerToggle.syncState()
         // to make the Navigation drawer icon always appear on the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         // assign NavigationView to a variable
         val mainNavigationView = findViewById<View>(R.id.navigation) as NavigationView
         // handles navigationView menu item selection
@@ -141,7 +148,7 @@ class MainActivity : AppCompatActivity() {
             R.id.nav_dark_mode -> {
                 // Handle the theme switch action
                 Toast.makeText(this, "Theme switch selected", Toast.LENGTH_SHORT).show()
-                toggleDarkMode()
+                toggleDarkMode(menuItem)
                 // val intent = Intent(this, HomeActivity::class.java)
                 // startActivity(intent)
             }
@@ -175,18 +182,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     // handles dark mode toggle in nav menu
-    private fun toggleDarkMode() {
+    private fun toggleDarkMode(menuItem: MenuItem) {
+        val mainNavigationView = findViewById<View>(R.id.navigation) as NavigationView
+        val navItem = mainNavigationView.menu.findItem(R.id.nav_dark_mode)
+        val actionView = navItem.actionView
+        if (actionView != null) {
+            switchDarkMode = actionView.findViewById(R.id.switch_dark_mode)
+        }
+
         // Get the current night mode
         val currentNightMode = AppCompatDelegate.getDefaultNightMode()
         if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
             // If currently in dark mode, switch to light mode
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             saveDarkModePreference(false)
+            switchDarkMode.setChecked(true)
             Toast.makeText(this, "Switched to Light Mode", Toast.LENGTH_SHORT).show()
         } else {
             // If currently in light mode, switch to dark mode
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             saveDarkModePreference(true)
+            switchDarkMode.setChecked(false)
             Toast.makeText(this, "Switched to Dark Mode", Toast.LENGTH_SHORT).show()
         }
     }
@@ -269,7 +285,7 @@ class MainActivity : AppCompatActivity() {
 
 // handles switching between menu fragments
 fun replaceFragment() {
-
+    // do stuff when menu item is selected
 }
 
 // method initializes one timer at a time at program start
