@@ -11,6 +11,7 @@ Changelog:
 1/13/25 Added +5 seconds on switch as per Fischer timing
 1/14/25 Altered display to show 5 second addition correctly, added intro message
         Timer only starts after an initial click
+1/16/25 Timers now persist when activity is restarted i.e. dark/light mode switch
  */
 package com.weatherly.coffeehouse
 
