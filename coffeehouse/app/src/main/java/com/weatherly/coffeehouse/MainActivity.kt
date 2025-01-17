@@ -26,7 +26,6 @@ import android.view.View
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.Window
-import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle

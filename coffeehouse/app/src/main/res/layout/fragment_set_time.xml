@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".SetTimeFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="@string/set_time_fragment"
-        android:textSize="60sp"/>
 
-</FrameLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="550dp"
+        android:layout_gravity="center"
+        android:background="?android:attr/detailsElementBackground"
+        android:paddingHorizontal="50dp"
+        android:paddingVertical="50dp"
+        android:text="@string/set_time_fragment"
+        android:textSize="50sp" />
+
+    <Button
+        android:id="@+id/back_button"
+        android:layout_width="271dp"
+        android:layout_height="114dp"
+        android:layout_gravity="center"
+        android:paddingHorizontal="10dp"
+        android:paddingVertical="10dp"
+        android:text="@string/nav_close"
+        android:textSize="25sp"/>
+
+</LinearLayout>
