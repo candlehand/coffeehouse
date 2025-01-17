@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Coffeehouse: Chess Timer</string>
     <string name="title">Chess Timer</string>
-    <string name="intro_message">Click anywhere on the screen to begin</string>
+    <string name="intro_message">Tap anywhere on screen to begin</string>
     <string name="timer1Text">Player 1</string>
     <string name="timer2Text">Player 2</string>
     <string name="initialClock">10:00:00</string>
@@ -9,4 +9,5 @@
     <string name="timeOut">Time\'s up!</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
+    <string name="set_time_fragment">Change the starting value of the timers</string>
 </resources>

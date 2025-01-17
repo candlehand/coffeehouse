@@ -13,13 +13,20 @@
     <item
         android:id="@+id/nav_settings"
         android:title="Settings"
-        app:showAsAction="ifRoom"
-        android:contentDescription=""/>
+        app:showAsAction="never"
+        android:contentDescription="Settings menu"/>
 
     <item
         android:id="@+id/nav_reset"
         android:title="Reset"
         app:showAsAction="ifRoom"
-        android:contentDescription=""/>
+        android:contentDescription="Reset the timers"/>
+
+    <item
+        android:id="@+id/pause"
+        android:title="Pause"
+        app:showAsAction="ifRoom"
+        android:contentDescription="Pause Button"/>
+
 
 </menu>

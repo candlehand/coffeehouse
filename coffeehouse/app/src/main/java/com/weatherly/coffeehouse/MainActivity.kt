@@ -35,24 +35,33 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.switchmaterial.SwitchMaterial
 import java.text.DecimalFormat
+import com.weatherly.coffeehouse.SetTimeFragment
 
 class MainActivity : AppCompatActivity() {
 
-    // variables for navigation bar function
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
-    // hold user's selection of which player's turn it is
+
+    // user's selection of which player's turn it is
     private var timerSelected = 1
-    // holds remaining time on each clock
+    // keep track of which clock is running
+    var clock1Running = false
+    var clock2Running = false
+    // remaining time on each clock
     var clock1Time: Long = 600000
     var clock2Time: Long = 600000
     // init textView variables for the 2 clocks
     lateinit var clock1 : TextView
     lateinit var clock2 : TextView
-    // init nave menu switch
+    // track pause state
+    private var isPaused = false
+    // variables for navigation bar function
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
+    // init nav menu switch
     private lateinit var switchDarkMode: SwitchCompat
 
     // runs on creation of the main activity, at app start
@@ -75,6 +84,10 @@ class MainActivity : AppCompatActivity() {
         // uses the toolbar as an actionbar
         setSupportActionBar(toolbar)
 
+        // assign the clock view ids to variables
+        clock1 = findViewById(R.id.clock1)
+        clock2 = findViewById(R.id.clock2)
+
         // drawer layout instance to toggle the menu icon to open
         // drawer and back button to close drawer
         drawerLayout = findViewById(R.id.my_drawer_layout)
@@ -93,12 +106,7 @@ class MainActivity : AppCompatActivity() {
             onNavigationItemSelected(menuItem)
         }
 
-        // assign the clock view ids to variables
-        clock1 = findViewById(R.id.clock1)
-        clock2 = findViewById(R.id.clock2)
-        // assign initial values to clock text. To be changed into variables
-        clock1.text = getString(R.string.initialClock)
-        clock2.text = getString(R.string.initialClock)
+
 
         // if saved state exists, retrieve clock times before proceeding
         if (savedInstanceState != null) {
@@ -122,6 +130,9 @@ class MainActivity : AppCompatActivity() {
 
         val body: TextView = dialog.findViewById(R.id.intro_card)
         body.text = getString(R.string.intro_message)
+        // set clocks before message is displayed
+        setClockText(clock1, clock1Time)
+        setClockText(clock2, clock2Time)
 
         // closes the dialog when user clicks outside of it
         dialog.setCanceledOnTouchOutside(true)
@@ -143,32 +154,48 @@ class MainActivity : AppCompatActivity() {
 
     private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         Log.d("MainActivity", "Menu item selected: ${menuItem.title}")
-        val id = menuItem.itemId
-        when (id) {
+        when (val id = menuItem.itemId) {
             R.id.nav_dark_mode -> {
                 // Handle the theme switch action
-                Toast.makeText(this, "Theme switch selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Theme changed", Toast.LENGTH_SHORT).show()
                 toggleDarkMode(menuItem)
-                // val intent = Intent(this, HomeActivity::class.java)
-                // startActivity(intent)
             }
             R.id.nav_settings -> {
                 // Handle the settings action
-                Toast.makeText(this, "Settings selected", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Settings menu coming soon!", Toast.LENGTH_SHORT).show()
+                pauseTimers()
+                replaceFragment(SetTimeFragment(), menuItem.title.toString())
+
             }
             R.id.nav_reset -> {
                 // Handle the reset action
-                Toast.makeText(this, "Clocks Reset", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Time reset.", Toast.LENGTH_SHORT).show()
                 timer1.cancel()
                 timer2.cancel()
                 clock1Time = 600000
                 clock2Time = 600000
                 startDialog(timer1, timer2, timerSelected)
             }
+            R.id.pause -> {
+                pauseTimers()
+            }
         }
+
         // Close the navigation drawer after item is selected
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
+
+    }
+
+    private fun pauseTimers() {
+        isPaused = true
+        timerSelected = if (clock1Running) {
+            1
+        } else {
+            2
+        }
+        timer1.cancel()
+        timer2.cancel()
     }
 
     // opens and closes the drawer when icon is clicked
@@ -215,19 +242,18 @@ class MainActivity : AppCompatActivity() {
         editor.apply()
     }
 
-
-
-
     // Timer object for player 1, 600000 = 10 minutes 1 = 1 millisecond
     private val timer1 = object : CountDownTimer(clock1Time, 1000) {
         // Callback function triggered regularly
         override fun onTick(millisUntilFinished: Long) {
+            clock1Running = true
             clock1Time -= 1000
             setClockText(clock1, clock1Time)
         }
 
         // displays message when the time runs out
         override fun onFinish() {
+            clock1Running = false
             clock1.text = getString(R.string.timeOut)
         }
     }
@@ -236,27 +262,43 @@ class MainActivity : AppCompatActivity() {
     private val timer2 = object : CountDownTimer(clock2Time, 1000) {
         // Callback function triggered regularly
         override fun onTick(millisUntilFinished: Long) {
+            clock2Running = true
             clock2Time -= 1000
             setClockText(clock2, clock2Time)
         }
         // displays message when the time runs out
         override fun onFinish() {
+            clock2Running = false
             clock2.text = getString(R.string.timeOut)
         }
     }
 
     // method for capturing button click to swap clocks
     fun timerSwapButtonClick(view: View?) {
-        if (timerSelected == 1){
-            // adds & displays extra 5 seconds when clock is stopped per Fischer rules
-            clock1Time += 5000
-            setClockText(clock1, clock1Time)
-            timerSelected = 2
+        if (isPaused) {
+            if (timerSelected == 1) {
+                clock1Running = true
+                setClockText(clock2, clock2Time)
+                isPaused = false
+            } else {
+                clock2Running = false
+                setClockText(clock1, clock1Time)
+                isPaused = false
+            }
         } else {
-            // adds & displays extra 5 seconds when clock is stopped per Fischer rules
-            clock2Time += 5000
-            setClockText(clock2, clock2Time)
-            timerSelected = 1
+            if (timerSelected == 1) {
+                // adds & displays extra 5 seconds when clock is stopped per Fischer rules
+                clock1Running = false
+                clock1Time += 5000
+                setClockText(clock1, clock1Time)
+                timerSelected = 2
+            } else {
+                // adds & displays extra 5 seconds when clock is stopped per Fischer rules
+                clock2Running = false
+                clock2Time += 5000
+                setClockText(clock2, clock2Time)
+                timerSelected = 1
+            }
         }
         startTimers(timer1, timer2, timerSelected)
     }
@@ -281,14 +323,21 @@ class MainActivity : AppCompatActivity() {
         outState.putLong("clock2TimeKey", clock2Time)
     }
 
+    // handles switching between menu fragments
+    private fun replaceFragment(fragment: Fragment, title: String) {
+        // log entry for troubleshooting
+        Log.d("MainActivity", "Replacing fragment with: $title")
+        // do stuff when menu item is selected
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragmentView, fragment)
+        fragmentTransaction.commit()
+        drawerLayout.closeDrawers()
+        setTitle(title)
+    }
 }
 
-// handles switching between menu fragments
-fun replaceFragment() {
-    // do stuff when menu item is selected
-}
-
-// method initializes one timer at a time at program start
+    // method initializes one timer at a time at program start
 fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
     // 'timerSelected' will hold the user's choice of who will go first
     if (timerSelected == 1){
