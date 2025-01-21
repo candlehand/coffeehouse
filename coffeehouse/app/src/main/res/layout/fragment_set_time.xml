@@ -1,30 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".SetTimeFragment">
 
-
     <TextView
         android:layout_width="match_parent"
-        android:layout_height="550dp"
-        android:layout_gravity="center"
+        android:layout_height="220dp"
         android:background="?android:attr/detailsElementBackground"
+        android:gravity="center"
         android:paddingHorizontal="50dp"
         android:paddingVertical="50dp"
         android:text="@string/set_time_fragment"
-        android:textSize="50sp" />
+        android:textSize="45sp" />
 
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="271dp"
-        android:layout_height="114dp"
-        android:layout_gravity="center"
-        android:paddingHorizontal="10dp"
-        android:paddingVertical="10dp"
-        android:text="@string/nav_close"
-        android:textSize="25sp"/>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:attr/detailsElementBackground">
+
+        <LinearLayout
+            android:id="@+id/labelLinearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout1"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/minutes" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/interval" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/labelLinearLayout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/timer1Text"
+                android:textSize="20sp" />
+
+            <NumberPicker
+                android:id="@+id/minute_entry1"
+                android:layout_width="100dp"
+                android:layout_height="114dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?android:attr/detailsElementBackground"
+                android:digits="0123456789."
+                android:inputType="numberDecimal" />
+
+            <NumberPicker
+                android:id="@+id/second_entry1"
+                android:layout_width="100dp"
+                android:layout_height="114dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?android:attr/detailsElementBackground"
+                android:digits="0123456789."
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/timer2Text"
+                android:textSize="20sp" />
+
+
+            <NumberPicker
+                android:id="@+id/minute_entry2"
+                android:layout_width="100dp"
+                android:layout_height="114dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?android:attr/detailsElementBackground"
+                android:digits="0123456789."
+                android:inputType="numberDecimal" />
+
+            <NumberPicker
+                android:id="@+id/secondEntry2"
+                android:layout_width="100dp"
+                android:layout_height="114dp"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="?android:attr/detailsElementBackground"
+                android:digits="0123456789."
+                android:inputType="numberDecimal" />
+        </LinearLayout>
+
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginBottom="40dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="40dp"
+            app:backgroundTint="@color/primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+            <Button
+                android:id="@+id/confirm_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/nav_confirm"
+                android:textColor="@color/onPrimary"
+                android:textSize="25sp"
+                app:backgroundTint="@color/primary" />
+
+            <Button
+                android:id="@+id/back_button"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="match_parent"
+                android:layout_height="85dp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/nav_close"
+                android:textColor="@color/onPrimary"
+                android:textSize="25sp"
+                app:backgroundTint="@color/primary" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

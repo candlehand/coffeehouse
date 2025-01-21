@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.NumberPicker
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
@@ -32,9 +33,17 @@ class SetTimeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
+        // Inflate the layout for this fragment, assign to variable
         val setTimeView = inflater.inflate(R.layout.fragment_set_time, container, false)
+        // assign number pickers to variables
+        val minutePicker1 = setTimeView.findViewById<NumberPicker>(R.id.minute_entry1)
+        val minutePicker2 = setTimeView.findViewById<NumberPicker>(R.id.minute_entry2)
+
+        // assign buttons to variables
         val backButton = setTimeView.findViewById<Button>(R.id.back_button)
+        val confirmButton = setTimeView.findViewById<Button>(R.id.confirm_button)
+
+        // back button functionality
         backButton.setOnClickListener {
             closeFragment()
         }

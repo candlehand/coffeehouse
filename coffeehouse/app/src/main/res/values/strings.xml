@@ -9,5 +9,8 @@
     <string name="timeOut">Time\'s up!</string>
     <string name="nav_open">Open</string>
     <string name="nav_close">Close</string>
-    <string name="set_time_fragment">Change the starting value of the timers</string>
+    <string name="nav_confirm">Confirm</string>
+    <string name="set_time_fragment">Time Settings</string>
+    <string name="minutes">Minutes</string>
+    <string name="interval">Interval</string>
 </resources>

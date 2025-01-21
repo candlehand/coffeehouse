@@ -43,7 +43,6 @@ import com.weatherly.coffeehouse.SetTimeFragment
 
 class MainActivity : AppCompatActivity() {
 
-
     // user's selection of which player's turn it is
     private var timerSelected = 1
     // keep track of which clock is running
