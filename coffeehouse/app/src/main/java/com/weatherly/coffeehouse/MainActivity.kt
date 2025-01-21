@@ -104,8 +104,6 @@ class MainActivity : AppCompatActivity() {
             onNavigationItemSelected(menuItem)
         }
 
-
-
         // if saved state exists, retrieve clock times before proceeding
         if (savedInstanceState != null) {
             // Restore the state from the saved key values

@@ -84,7 +84,7 @@
                 android:inputType="numberDecimal" />
 
             <NumberPicker
-                android:id="@+id/second_entry1"
+                android:id="@+id/interval_entry1"
                 android:layout_width="100dp"
                 android:layout_height="114dp"
                 android:layout_gravity="center"
@@ -126,7 +126,7 @@
                 android:inputType="numberDecimal" />
 
             <NumberPicker
-                android:id="@+id/secondEntry2"
+                android:id="@+id/interval_entry2"
                 android:layout_width="100dp"
                 android:layout_height="114dp"
                 android:layout_gravity="center"
