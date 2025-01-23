@@ -47,6 +47,12 @@ class SetTimeFragment : Fragment() {
         val minutePicker = setTimeView.findViewById<NumberPicker>(R.id.minute_entry)
         val intervalPicker = setTimeView.findViewById<NumberPicker>(R.id.interval_entry)
 
+        // set minutePicker params (minutes)
+        minutePicker.setMinValue(1)
+        minutePicker.setMaxValue(120)
+        // set intervalPicker params (seconds)
+        intervalPicker.setMinValue(0)
+        intervalPicker.setMaxValue(10)
 
         // assign buttons to variables
         val backButton = setTimeView.findViewById<Button>(R.id.back_button)
@@ -60,7 +66,7 @@ class SetTimeFragment : Fragment() {
         // bind confirm button to listener
         confirmButton.setOnClickListener {
             // called when confirm button is pressed
-            setTimers()
+            setTimers(setTimeView)
         }
 
         return setTimeView
@@ -76,10 +82,18 @@ class SetTimeFragment : Fragment() {
     }
 
     // called when confirm button is pressed
-    private fun setTimers() {
-        // set clock1time = minutePicker * 1000
-        // set clock2time = minutePicker * 1000
-        // set interval = amount in seconds
+    private fun setTimers(view: View) {
+        // assign variables
+        var clock1Time = (activity as? MainActivity)?.clock1Time
+        var clock2Time = (activity as? MainActivity)?.clock2Time
+        var interval: Long = 0
+        // assign number pickers to variables
+        val minutePicker = view.findViewById<NumberPicker>(R.id.minute_entry)
+        val intervalPicker = view.findViewById<NumberPicker>(R.id.interval_entry)
+        // set the clock values to the chosen amount of minutes
+        clock1Time = (minutePicker.value * 60000).toLong()
+        clock2Time = (minutePicker.value * 60000).toLong()
+        interval   = (intervalPicker.value * 1000).toLong()
         // consider saving these in settings
     }
 
