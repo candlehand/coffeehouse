@@ -15,9 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.NumberPicker
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentTransaction
 
 // TODO: Rename parameter arguments, choose names that match
@@ -44,11 +42,11 @@ class SetTimeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment, assign to variable
         val setTimeView = inflater.inflate(R.layout.fragment_set_time, container, false)
+
         // assign number pickers to variables
-        val minutePicker1 = setTimeView.findViewById<NumberPicker>(R.id.minute_entry1)
-        val intervalPicker1 = setTimeView.findViewById<NumberPicker>(R.id.interval_entry1)
-        val minutePicker2 = setTimeView.findViewById<NumberPicker>(R.id.minute_entry2)
-        val intervalPicker2 = setTimeView.findViewById<NumberPicker>(R.id.interval_entry2)
+        val minutePicker = setTimeView.findViewById<NumberPicker>(R.id.minute_entry)
+        val intervalPicker = setTimeView.findViewById<NumberPicker>(R.id.interval_entry)
+
 
         // assign buttons to variables
         val backButton = setTimeView.findViewById<Button>(R.id.back_button)
@@ -79,9 +77,9 @@ class SetTimeFragment : Fragment() {
 
     // called when confirm button is pressed
     private fun setTimers() {
-        // set clock1time = chosen amount
-        // set clock2time = chosen amount
-        // set interval = chosen amount
+        // set clock1time = minutePicker * 1000
+        // set clock2time = minutePicker * 1000
+        // set interval = amount in seconds
         // consider saving these in settings
     }
 

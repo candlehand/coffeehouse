@@ -29,29 +29,7 @@
             android:orientation="horizontal"
             android:paddingHorizontal="20dp"
             app:layout_constraintBottom_toTopOf="@+id/linearLayout1"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:gravity="center" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/minutes" />
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/interval" />
-
-        </LinearLayout>
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <LinearLayout
             android:id="@+id/linearLayout1"
@@ -70,11 +48,11 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/timer1Text"
+                android:text="@string/minutes"
                 android:textSize="20sp" />
 
             <NumberPicker
-                android:id="@+id/minute_entry1"
+                android:id="@+id/minute_entry"
                 android:layout_width="100dp"
                 android:layout_height="114dp"
                 android:layout_gravity="center"
@@ -83,15 +61,6 @@
                 android:digits="0123456789."
                 android:inputType="numberDecimal" />
 
-            <NumberPicker
-                android:id="@+id/interval_entry1"
-                android:layout_width="100dp"
-                android:layout_height="114dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="?android:attr/detailsElementBackground"
-                android:digits="0123456789."
-                android:inputType="numberDecimal" />
         </LinearLayout>
 
         <LinearLayout
@@ -111,12 +80,12 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="10dp"
-                android:text="@string/timer2Text"
+                android:text="@string/interval"
                 android:textSize="20sp" />
 
 
             <NumberPicker
-                android:id="@+id/minute_entry2"
+                android:id="@+id/interval_entry"
                 android:layout_width="100dp"
                 android:layout_height="114dp"
                 android:layout_gravity="center"
@@ -125,15 +94,6 @@
                 android:digits="0123456789."
                 android:inputType="numberDecimal" />
 
-            <NumberPicker
-                android:id="@+id/interval_entry2"
-                android:layout_width="100dp"
-                android:layout_height="114dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="?android:attr/detailsElementBackground"
-                android:digits="0123456789."
-                android:inputType="numberDecimal" />
         </LinearLayout>
 
         <LinearLayout
