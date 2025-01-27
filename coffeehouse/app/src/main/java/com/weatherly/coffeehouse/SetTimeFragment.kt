@@ -6,9 +6,11 @@ Purpose: Holds logic for "settings" menu fragment
 Changelog:
 1/15/25 Initial creation - CW
 1/21/25 Added functionality for menu buttons - CW
+1/27/25 Added setTimers functionality allowing users to manually set timer length and interval - CW
  */
 package com.weatherly.coffeehouse
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,21 +20,15 @@ import android.widget.NumberPicker
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 class SetTimeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+
         }
     }
 
@@ -83,20 +79,28 @@ class SetTimeFragment : Fragment() {
 
     // called when confirm button is pressed
     private fun setTimers(view: View) {
-        // assign variables
-        var clock1Time = (activity as? MainActivity)?.clock1Time
-        var clock2Time = (activity as? MainActivity)?.clock2Time
-        var interval: Long = 0
+        // access sharedPrefs
+        val sharedPrefs = requireActivity().getSharedPreferences(
+            "${BuildConfig.APPLICATION_ID}_sharedPreferences",
+            Context.MODE_PRIVATE)
         // assign number pickers to variables
         val minutePicker = view.findViewById<NumberPicker>(R.id.minute_entry)
         val intervalPicker = view.findViewById<NumberPicker>(R.id.interval_entry)
-        // set the clock values to the chosen amount of minutes
-        clock1Time = (minutePicker.value * 60000).toLong()
-        clock2Time = (minutePicker.value * 60000).toLong()
-        interval   = (intervalPicker.value * 1000).toLong()
-        // consider saving these in settings
+        // assign chosen values to variables & convert to Long
+        val clockTime = (minutePicker.value * 60000).toLong()
+        println(clockTime)
+        val intervalTime = (intervalPicker.value * 1000).toLong()
+        // save minutePicker value to sharedPrefs
+        sharedPrefs.edit().putLong("clock_time", clockTime).apply()
+        println(sharedPrefs.getLong("clock_time", clockTime))
+        // save intervalTime to sharedPrefs
+        sharedPrefs.edit().putLong("interval_time", intervalTime).apply()
+        // restart the timers with the new values
+        (activity as MainActivity?)!!.changeTimers()
+        closeFragment()
     }
 
+    // placeholder, to be removed before release
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -111,8 +115,6 @@ class SetTimeFragment : Fragment() {
         fun newInstance(param1: String, param2: String) =
             SetTimeFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
                 }
             }
     }

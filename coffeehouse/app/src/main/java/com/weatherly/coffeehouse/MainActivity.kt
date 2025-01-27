@@ -13,10 +13,15 @@ Changelog:
         Timer only starts after an initial click - CW
 1/16/25 Timers now persist when activity is restarted i.e. dark/light mode switch
         Dark mode slider now correctly updates when mode is switched - CW
+1/27/25 Added ability to save variables in SharedPreferences
+        Added settings menu, allowing users to choose minutes on timer
+        and interval (in seconds)). Refactoring. - CW
  */
 package com.weatherly.coffeehouse
 
 import android.app.Dialog
+import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -35,22 +40,27 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.switchmaterial.SwitchMaterial
 import java.text.DecimalFormat
-import com.weatherly.coffeehouse.SetTimeFragment
 
 class MainActivity : AppCompatActivity() {
 
+    // allows access to SharedPreferences values
+    private val sharedPrefs: SharedPreferences by lazy {
+        getSharedPreferences(
+            "${BuildConfig.APPLICATION_ID}_sharedPreferences",
+            Context.MODE_PRIVATE)
+    }
     // user's selection of which player's turn it is
     private var timerSelected = 1
     // keep track of which clock is running
     var clock1Running = false
     var clock2Running = false
     // remaining time on each clock
-    var clock1Time: Long = 600000
-    var clock2Time: Long = 600000
+    var clock1Time = 600000L
+    var clock2Time = 600000L
+    // interval when timers are switched
+    private var interval = 5000L
     // init textView variables for the 2 clocks
     lateinit var clock1 : TextView
     lateinit var clock2 : TextView
@@ -69,32 +79,29 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //check user's dark/light mode preference
-        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
+        val sharedPreferences = getSharedPreferences(
+            "${BuildConfig.APPLICATION_ID}_sharedPreferences",
+            MODE_PRIVATE)
         val isDarkMode = sharedPreferences.getBoolean("isDarkMode", true)
-        if (isDarkMode) {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-        } else {
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-        }
+        AppCompatDelegate.setDefaultNightMode(
+            if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
+            else AppCompatDelegate.MODE_NIGHT_NO)
 
         // assigning ID of the toolbar to a variable
         val toolbar: Toolbar = findViewById(R.id.toolbar)
-        // uses the toolbar as an actionbar
         setSupportActionBar(toolbar)
 
         // assign the clock view ids to variables
         clock1 = findViewById(R.id.clock1)
         clock2 = findViewById(R.id.clock2)
 
-        // drawer layout instance to toggle the menu icon to open
-        // drawer and back button to close drawer
+        // drawer layout instance
         drawerLayout = findViewById(R.id.my_drawer_layout)
-        actionBarDrawerToggle = ActionBarDrawerToggle(this, drawerLayout, R.string.nav_open, R.string.nav_close)
-        // pass the Open and Close toggle for the drawer layout listener
-        // to toggle the button
+        actionBarDrawerToggle = ActionBarDrawerToggle(
+            this, drawerLayout, R.string.nav_open, R.string.nav_close)
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
-        // to make the Navigation drawer icon always appear on the action bar
+        // makes the Navigation drawer icon always appear on the action bar
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         // assign NavigationView to a variable
@@ -104,11 +111,15 @@ class MainActivity : AppCompatActivity() {
             onNavigationItemSelected(menuItem)
         }
 
+        // init timers here
+
         // if saved state exists, retrieve clock times before proceeding
         if (savedInstanceState != null) {
             // Restore the state from the saved key values
-            clock1Time = savedInstanceState.getLong("clock1TimeKey")
-            clock2Time = savedInstanceState.getLong("clock2TimeKey")
+            clock1Time = sharedPrefs.getLong("clock1Time", 600000)
+            println("Saved 1: $clock1Time")
+            clock2Time = sharedPrefs.getLong("clock2Time", 600000)
+            println("Saved 2: $clock2Time")
             setClockText(clock1, clock1Time)
             setClockText(clock2, clock2Time)
         }
@@ -117,7 +128,7 @@ class MainActivity : AppCompatActivity() {
         startDialog(timer1, timer2, timerSelected)
     }
 
-    // function for starting message
+    // function for starting message, runs on initial start
     private fun startDialog(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
         val dialog = Dialog(this)
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -126,19 +137,25 @@ class MainActivity : AppCompatActivity() {
 
         val body: TextView = dialog.findViewById(R.id.intro_card)
         body.text = getString(R.string.intro_message)
-        // set clocks before message is displayed
+        // set the clocks
         setClockText(clock1, clock1Time)
         setClockText(clock2, clock2Time)
 
         // closes the dialog when user clicks outside of it
         dialog.setCanceledOnTouchOutside(true)
         // do something on touch
-        dialog.show()
+        if (!isFinishing && !isDestroyed) {
+            dialog.show();
+        }
+
+        //dialog.show()
 
         dialog.window?.decorView?.setOnTouchListener { view, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 dialog.dismiss()
                 view.performClick() // calling performClick as per accessibility suggestions
+                // reset appropriate variables
+                isPaused = false
                 // begin the countdown!!!
                 startTimers(timer1, timer2, timerSelected)
                 true // Indicate that the touch event was handled
@@ -148,6 +165,23 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    // to be called when values are changed from settings fragment, re-inits with new values
+    fun changeTimers() {
+        // check sharedPrefs for values
+        println("before: $clock1Time")
+        clock1Time = sharedPrefs.getLong("clock_time", 600000)
+        clock2Time = sharedPrefs.getLong("clock_time", 600000)
+        interval = sharedPrefs.getLong("interval_time", 5000)
+        println("after: $clock1Time")
+        // set clocks before message is displayed
+        setClockText(clock1, clock1Time)
+        setClockText(clock2, clock2Time)
+        timerSelected = 1
+        println("timerSelected: $timerSelected")
+        startDialog(timer1, timer2, timerSelected)
+    }
+
+    // handles navigation menu items
     private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         Log.d("MainActivity", "Menu item selected: ${menuItem.title}")
         when (val id = menuItem.itemId) {
@@ -158,29 +192,31 @@ class MainActivity : AppCompatActivity() {
             }
             R.id.nav_settings -> {
                 // Handle the settings action
-                Toast.makeText(this, "Settings menu coming soon!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Settings menu coming soon!",
+                    Toast.LENGTH_SHORT).show()
                 pauseTimers()
                 replaceFragment(SetTimeFragment(), menuItem.title.toString())
-
             }
             R.id.nav_reset -> {
                 // Handle the reset action
                 Toast.makeText(this, "Time reset.", Toast.LENGTH_SHORT).show()
                 timer1.cancel()
                 timer2.cancel()
-                clock1Time = 600000
-                clock2Time = 600000
+                // restore original saved values when reset is pressed
+                val defaultTime = 600000.toLong()
+                sharedPrefs.edit().putLong("clock_time", defaultTime).apply()
+                sharedPrefs.edit().putLong("interval_time", 5000).apply()
+                clock1Time = sharedPrefs.getLong("clock_time", defaultTime)
+                clock2Time = sharedPrefs.getLong("clock_time", defaultTime)
                 startDialog(timer1, timer2, timerSelected)
             }
             R.id.pause -> {
                 pauseTimers()
             }
         }
-
         // Close the navigation drawer after item is selected
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
-
     }
 
     private fun pauseTimers() {
@@ -212,7 +248,6 @@ class MainActivity : AppCompatActivity() {
         if (actionView != null) {
             switchDarkMode = actionView.findViewById(R.id.switch_dark_mode)
         }
-
         // Get the current night mode
         val currentNightMode = AppCompatDelegate.getDefaultNightMode()
         if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
@@ -232,8 +267,7 @@ class MainActivity : AppCompatActivity() {
 
     // save the users preference for dark or light mode
     private fun saveDarkModePreference(isDarkMode: Boolean) {
-        val sharedPreferences = getSharedPreferences("AppPreferences", MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
+        val editor = sharedPrefs.edit()
         editor.putBoolean("isDarkMode", isDarkMode)
         editor.apply()
     }
@@ -271,6 +305,11 @@ class MainActivity : AppCompatActivity() {
 
     // method for capturing button click to swap clocks
     fun timerSwapButtonClick(view: View?) {
+        println("isPaused: $isPaused")
+        println("Clock1Running: $clock1Running")
+        println("Clock2Running: $clock2Running")
+        println("timerSelected: $timerSelected")
+        println("interval: $interval")
         if (isPaused) {
             if (timerSelected == 1) {
                 clock1Running = true
@@ -285,13 +324,13 @@ class MainActivity : AppCompatActivity() {
             if (timerSelected == 1) {
                 // adds & displays extra 5 seconds when clock is stopped per Fischer rules
                 clock1Running = false
-                clock1Time += 5000
+                clock1Time += interval
                 setClockText(clock1, clock1Time)
                 timerSelected = 2
             } else {
                 // adds & displays extra 5 seconds when clock is stopped per Fischer rules
                 clock2Running = false
-                clock2Time += 5000
+                clock2Time += interval
                 setClockText(clock2, clock2Time)
                 timerSelected = 1
             }
@@ -315,8 +354,8 @@ class MainActivity : AppCompatActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         // Save the current value of each clock
-        outState.putLong("clock1TimeKey", clock1Time)
-        outState.putLong("clock2TimeKey", clock2Time)
+        outState.putLong("clock1Time", clock1Time)
+        outState.putLong("clock2Time", clock2Time)
     }
 
     // handles switching between menu fragments
@@ -333,7 +372,8 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-    // method initializes one timer at a time at program start
+
+// method initializes one timer at a time at program start
 fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
     // 'timerSelected' will hold the user's choice of who will go first
     if (timerSelected == 1){
