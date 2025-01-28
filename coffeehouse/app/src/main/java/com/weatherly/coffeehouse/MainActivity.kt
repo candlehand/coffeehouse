@@ -45,6 +45,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.navigation.NavigationView
 import java.text.DecimalFormat
 
+
 class MainActivity : AppCompatActivity() {
 
     // allows access to SharedPreferences values
@@ -75,8 +76,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var switchDarkMode: SwitchCompat
 
     // runs on creation of the main activity, at app start
-    override fun onCreate(outState: Bundle?) {
-        super.onCreate(outState)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
@@ -113,13 +114,13 @@ class MainActivity : AppCompatActivity() {
             onNavigationItemSelected(menuItem)
         }
 
-        // if saved state exists, retrieve clock times before proceeding
-        if (outState != null) {
-            // Restore the state from the saved key values
-            clock1Time = outState.getLong("clock1Time", 600000)
-            println("Saved 1: $clock1Time")
-            clock2Time = outState.getLong("clock2Time", 600000)
-            println("Saved 2: $clock2Time")
+        // if saved state exists, retrieve clock times & interval before proceeding
+        if (savedInstanceState != null) {
+            // Restores the state of the clocks from saved values
+            clock1Time = savedInstanceState.getLong("clock1Time", 600000)
+            clock2Time = savedInstanceState.getLong("clock2Time", 600000)
+            interval = savedInstanceState.getLong("interval_time", 5000)
+            timerSelected = savedInstanceState.getInt("timer_selected", 1)
             setClockText(clock1, clock1Time)
             setClockText(clock2, clock2Time)
         }
@@ -147,8 +148,6 @@ class MainActivity : AppCompatActivity() {
         if (!isFinishing && !isDestroyed) {
             dialog.show();
         }
-
-        //dialog.show()
 
         dialog.window?.decorView?.setOnTouchListener { view, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
@@ -356,6 +355,8 @@ class MainActivity : AppCompatActivity() {
         // Save the current value of each clock
         outState.putLong("clock1Time", clock1Time)
         outState.putLong("clock2Time", clock2Time)
+        outState.putLong("interval_time", interval)
+        outState.putInt("timer_selected", timerSelected)
     }
 
     // handles switching between menu fragments
@@ -372,7 +373,6 @@ class MainActivity : AppCompatActivity() {
     }
 }
 
-
 // method initializes one timer at a time at program start
 fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {
     // 'timerSelected' will hold the user's choice of who will go first
@@ -383,5 +383,4 @@ fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int
         timer1.cancel()
         timer2.start()
     }
-
 }
