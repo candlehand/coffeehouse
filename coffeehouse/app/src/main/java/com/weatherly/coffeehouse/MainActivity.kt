@@ -16,6 +16,8 @@ Changelog:
 1/27/25 Added ability to save variables in SharedPreferences
         Added settings menu, allowing users to choose minutes on timer
         and interval (in seconds)). Refactoring. - CW
+1/28/25 Fixed broken onSavedState method, allowing app to preserve settings through dark/light
+        change and screen orientation flip - CW
  */
 package com.weatherly.coffeehouse
 
@@ -73,8 +75,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var switchDarkMode: SwitchCompat
 
     // runs on creation of the main activity, at app start
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreate(outState: Bundle?) {
+        super.onCreate(outState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
 
@@ -111,14 +113,12 @@ class MainActivity : AppCompatActivity() {
             onNavigationItemSelected(menuItem)
         }
 
-        // init timers here
-
         // if saved state exists, retrieve clock times before proceeding
-        if (savedInstanceState != null) {
+        if (outState != null) {
             // Restore the state from the saved key values
-            clock1Time = sharedPrefs.getLong("clock1Time", 600000)
+            clock1Time = outState.getLong("clock1Time", 600000)
             println("Saved 1: $clock1Time")
-            clock2Time = sharedPrefs.getLong("clock2Time", 600000)
+            clock2Time = outState.getLong("clock2Time", 600000)
             println("Saved 2: $clock2Time")
             setClockText(clock1, clock1Time)
             setClockText(clock2, clock2Time)

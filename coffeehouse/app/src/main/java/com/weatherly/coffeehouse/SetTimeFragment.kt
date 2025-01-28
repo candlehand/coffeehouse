@@ -24,11 +24,9 @@ import androidx.fragment.app.FragmentTransaction
 class SetTimeFragment : Fragment() {
 
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-
         }
     }
 
@@ -64,7 +62,6 @@ class SetTimeFragment : Fragment() {
             // called when confirm button is pressed
             setTimers(setTimeView)
         }
-
         return setTimeView
     }
 
