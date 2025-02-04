@@ -27,6 +27,5 @@
         android:title="Pause"
         app:showAsAction="ifRoom"
         android:contentDescription="Pause Button"/>
-
-
+    
 </menu>

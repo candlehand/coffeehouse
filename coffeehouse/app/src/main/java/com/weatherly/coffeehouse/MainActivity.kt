@@ -18,7 +18,10 @@ Changelog:
         and interval (in seconds)). Refactoring. - CW
 1/28/25 Fixed broken onSavedState method, allowing app to preserve settings through dark/light
         change and screen orientation flip - CW
- */
+1/31/25 Dark mode toggle now functions correctly. Toggles on for dark mode, off for light. Pressing
+        label or toggle both work correctly - CW
+2/4/25  Reset button now resets to recent selection. Refactoring. - CW
+*/
 package com.weatherly.coffeehouse
 
 import android.app.Dialog
@@ -74,6 +77,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var actionBarDrawerToggle: ActionBarDrawerToggle
     // init nav menu switch
     private lateinit var switchDarkMode: SwitchCompat
+    // controls execution of onSwitched listener for switch
+    private var isListenerEnabled = true
 
     // runs on creation of the main activity, at app start
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -84,11 +89,13 @@ class MainActivity : AppCompatActivity() {
         //check user's dark/light mode preference
         val sharedPreferences = getSharedPreferences(
             "${BuildConfig.APPLICATION_ID}_sharedPreferences",
-            MODE_PRIVATE)
+            MODE_PRIVATE
+        )
         val isDarkMode = sharedPreferences.getBoolean("isDarkMode", true)
         AppCompatDelegate.setDefaultNightMode(
             if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES
-            else AppCompatDelegate.MODE_NIGHT_NO)
+            else AppCompatDelegate.MODE_NIGHT_NO
+        )
 
         // assigning ID of the toolbar to a variable
         val toolbar: Toolbar = findViewById(R.id.toolbar)
@@ -101,7 +108,8 @@ class MainActivity : AppCompatActivity() {
         // drawer layout instance
         drawerLayout = findViewById(R.id.my_drawer_layout)
         actionBarDrawerToggle = ActionBarDrawerToggle(
-            this, drawerLayout, R.string.nav_open, R.string.nav_close)
+            this, drawerLayout, R.string.nav_open, R.string.nav_close
+        )
         drawerLayout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
         // makes the Navigation drawer icon always appear on the action bar
@@ -112,6 +120,22 @@ class MainActivity : AppCompatActivity() {
         // handles navigationView menu item selection
         mainNavigationView.setNavigationItemSelectedListener { menuItem ->
             onNavigationItemSelected(menuItem)
+        }
+
+        // Access the Switch from the NavigationView
+        val navItem = mainNavigationView.menu.findItem(R.id.nav_dark_mode)
+        val actionView = navItem.actionView
+        if (actionView != null) {
+            switchDarkMode = actionView.findViewById(R.id.switch_dark_mode)
+        }
+
+        switchDarkMode.isChecked = isDarkMode
+
+        // Set a listener for the Switch, isListenerEnabled allows it to be ignored
+        switchDarkMode.setOnCheckedChangeListener { _, isChecked ->
+            if (isListenerEnabled) {
+                toggleDarkMode(isChecked)
+            }
         }
 
         // if saved state exists, retrieve clock times & interval before proceeding
@@ -125,7 +149,7 @@ class MainActivity : AppCompatActivity() {
             setClockText(clock2, clock2Time)
         }
 
-        // Displays start message to user, starts countdown when clicked
+                // Displays start message to user, starts countdown when clicked
         startDialog(timer1, timer2, timerSelected)
     }
 
@@ -146,7 +170,7 @@ class MainActivity : AppCompatActivity() {
         dialog.setCanceledOnTouchOutside(true)
         // do something on touch
         if (!isFinishing && !isDestroyed) {
-            dialog.show();
+            dialog.show()
         }
 
         dialog.window?.decorView?.setOnTouchListener { view, event ->
@@ -180,34 +204,25 @@ class MainActivity : AppCompatActivity() {
         startDialog(timer1, timer2, timerSelected)
     }
 
-    // handles navigation menu items
+    // handles navigation menu selections
     private fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
         Log.d("MainActivity", "Menu item selected: ${menuItem.title}")
-        when (val id = menuItem.itemId) {
+        when (menuItem.itemId) {
             R.id.nav_dark_mode -> {
                 // Handle the theme switch action
                 Toast.makeText(this, "Theme changed", Toast.LENGTH_SHORT).show()
-                toggleDarkMode(menuItem)
+                switchDarkMode.toggle()
             }
             R.id.nav_settings -> {
                 // Handle the settings action
-                Toast.makeText(this, "Settings menu coming soon!",
+                Toast.makeText(this, "Change the time & interval",
                     Toast.LENGTH_SHORT).show()
                 pauseTimers()
                 replaceFragment(SetTimeFragment(), menuItem.title.toString())
             }
             R.id.nav_reset -> {
                 // Handle the reset action
-                Toast.makeText(this, "Time reset.", Toast.LENGTH_SHORT).show()
-                timer1.cancel()
-                timer2.cancel()
-                // restore original saved values when reset is pressed
-                val defaultTime = 600000.toLong()
-                sharedPrefs.edit().putLong("clock_time", defaultTime).apply()
-                sharedPrefs.edit().putLong("interval_time", 5000).apply()
-                clock1Time = sharedPrefs.getLong("clock_time", defaultTime)
-                clock2Time = sharedPrefs.getLong("clock_time", defaultTime)
-                startDialog(timer1, timer2, timerSelected)
+                reset()
             }
             R.id.pause -> {
                 pauseTimers()
@@ -217,6 +232,8 @@ class MainActivity : AppCompatActivity() {
         drawerLayout.closeDrawer(GravityCompat.START)
         return true
     }
+
+
 
     private fun pauseTimers() {
         isPaused = true
@@ -239,29 +256,25 @@ class MainActivity : AppCompatActivity() {
         } else super.onOptionsItemSelected(item)
     }
 
-    // handles dark mode toggle in nav menu
-    private fun toggleDarkMode(menuItem: MenuItem) {
-        val mainNavigationView = findViewById<View>(R.id.navigation) as NavigationView
-        val navItem = mainNavigationView.menu.findItem(R.id.nav_dark_mode)
-        val actionView = navItem.actionView
-        if (actionView != null) {
-            switchDarkMode = actionView.findViewById(R.id.switch_dark_mode)
-        }
-        // Get the current night mode
-        val currentNightMode = AppCompatDelegate.getDefaultNightMode()
-        if (currentNightMode == AppCompatDelegate.MODE_NIGHT_YES) {
-            // If currently in dark mode, switch to light mode
-            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            saveDarkModePreference(false)
-            switchDarkMode.setChecked(true)
-            Toast.makeText(this, "Switched to Light Mode", Toast.LENGTH_SHORT).show()
-        } else {
-            // If currently in light mode, switch to dark mode
+    // handles dark mode toggle in nav menu (isCheckedState true = dark mode)
+    private fun toggleDarkMode(isCheckedState: Boolean) {
+        // If isCheckedState is true, we want dark mode
+        if (isCheckedState) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             saveDarkModePreference(true)
-            switchDarkMode.setChecked(false)
             Toast.makeText(this, "Switched to Dark Mode", Toast.LENGTH_SHORT).show()
+        } else {
+            // If isCheckedState is false, we want light mode
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            saveDarkModePreference(false)
+            Toast.makeText(this, "Switched to Light Mode", Toast.LENGTH_SHORT).show()
         }
+
+        // Update the switch state to reflect the current mode
+        isListenerEnabled = false // Disable listener temporarily
+        switchDarkMode.isChecked = isCheckedState // Set the switch state
+        isListenerEnabled = true // Re-enable listener
+        drawerLayout.closeDrawer(GravityCompat.START)
     }
 
     // save the users preference for dark or light mode
@@ -309,6 +322,7 @@ class MainActivity : AppCompatActivity() {
         println("Clock2Running: $clock2Running")
         println("timerSelected: $timerSelected")
         println("interval: $interval")
+        println("view: $view")
         if (isPaused) {
             if (timerSelected == 1) {
                 clock1Running = true
@@ -371,7 +385,29 @@ class MainActivity : AppCompatActivity() {
         drawerLayout.closeDrawers()
         setTitle(title)
     }
+    // Method to set the Switch state without triggering the listener, false turns it off
+    private fun switchListenerToggle(isChecked: Boolean) {
+        isListenerEnabled = false // Disable the listener
+        switchDarkMode.isChecked = isChecked // Set the checked state
+        isListenerEnabled = true // Re-enable the listener
+    }
+
+    fun reset() {
+        Toast.makeText(this, "Time reset.", Toast.LENGTH_SHORT).show()
+        timer1.cancel()
+        timer2.cancel()
+        // restore original saved values when reset is pressed
+        val defaultTime = 600000.toLong()
+        //sharedPrefs.edit().putLong("clock_time", defaultTime).apply()
+        //sharedPrefs.edit().putLong("interval_time", 5000).apply()
+        timerSelected = 1
+        clock1Time = sharedPrefs.getLong("clock_time", defaultTime)
+        clock2Time = sharedPrefs.getLong("clock_time", defaultTime)
+        startDialog(timer1, timer2, timerSelected)
+    }
 }
+
+
 
 // method initializes one timer at a time at program start
 fun startTimers(timer1:CountDownTimer, timer2:CountDownTimer, timerSelected: Int) {

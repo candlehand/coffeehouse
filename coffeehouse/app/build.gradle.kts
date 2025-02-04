@@ -11,8 +11,8 @@ android {
         applicationId = "com.weatherly.coffeehouse"
         minSdk = 26
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.02"
+        versionCode = 4
+        versionName = "1.05"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
