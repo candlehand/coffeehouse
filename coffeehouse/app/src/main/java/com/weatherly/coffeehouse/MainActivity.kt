@@ -21,6 +21,7 @@ Changelog:
 1/31/25 Dark mode toggle now functions correctly. Toggles on for dark mode, off for light. Pressing
         label or toggle both work correctly - CW
 2/4/25  Reset button now resets to recent selection. Refactoring. - CW
+2/11/25 Added about page containing Coffeehouse definition and privacy policy - CW
 */
 package com.weatherly.coffeehouse
 
@@ -227,6 +228,10 @@ class MainActivity : AppCompatActivity() {
             R.id.pause -> {
                 pauseTimers()
             }
+            R.id.about -> {
+                replaceFragment(AboutFragment(), menuItem.title.toString())
+                pauseTimers()
+            }
         }
         // Close the navigation drawer after item is selected
         drawerLayout.closeDrawer(GravityCompat.START)
@@ -392,7 +397,7 @@ class MainActivity : AppCompatActivity() {
         isListenerEnabled = true // Re-enable the listener
     }
 
-    fun reset() {
+    private fun reset() {
         Toast.makeText(this, "Time reset.", Toast.LENGTH_SHORT).show()
         timer1.cancel()
         timer2.cancel()

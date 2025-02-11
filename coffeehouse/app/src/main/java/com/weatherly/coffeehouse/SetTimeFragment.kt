@@ -1,5 +1,5 @@
 /*
-Class file for
+Class file for SetTimeFragment settings menu
 Author:  Chip Weatherly
 Date:    1/15/2025
 Purpose: Holds logic for "settings" menu fragment
@@ -79,7 +79,8 @@ class SetTimeFragment : Fragment() {
         // access sharedPrefs
         val sharedPrefs = requireActivity().getSharedPreferences(
             "${BuildConfig.APPLICATION_ID}_sharedPreferences",
-            Context.MODE_PRIVATE)
+            Context.MODE_PRIVATE
+        )
         // assign number pickers to variables
         val minutePicker = view.findViewById<NumberPicker>(R.id.minute_entry)
         val intervalPicker = view.findViewById<NumberPicker>(R.id.interval_entry)
@@ -97,22 +98,4 @@ class SetTimeFragment : Fragment() {
         closeFragment()
     }
 
-    // placeholder, to be removed before release
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment setTimeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            SetTimeFragment().apply {
-                arguments = Bundle().apply {
-                }
-            }
-    }
 }

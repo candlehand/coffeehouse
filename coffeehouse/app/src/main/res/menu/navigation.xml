@@ -27,5 +27,11 @@
         android:title="Pause"
         app:showAsAction="ifRoom"
         android:contentDescription="Pause Button"/>
+
+    <item
+        android:id="@+id/about"
+        android:title="About"
+        app:showAsAction="ifRoom"
+        android:contentDescription="App Info"/>
     
 </menu>
